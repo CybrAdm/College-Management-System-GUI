@@ -1,0 +1,97 @@
+CollegeSystem — Data Persistence
+==================================
+
+HOW DATA IS SAVED
+-----------------
+The application saves all data automatically when you close the main window.
+No manual save button is needed — simply close the application normally.
+
+Save file location:
+    college_data.dat
+    (created in the same folder where you run CollegeSystem.exe)
+
+The file is a binary file written using Qt's QDataStream (version Qt_5_0
+format, compatible with both Qt 5 and Qt 6).
+
+
+WHAT IS SAVED
+-------------
+The save file stores the complete application state:
+
+  1. Global ID counters
+       - stuIDCounter, stfIDCounter, admIDCounter, notifTimestamp
+       - Ensures new registrations always get unique IDs even after reload.
+
+  2. Students  (numOfStu entries)
+       - Personal info: ID, name, mobile, password, address
+       - Academic info: department, year, enrolled courses (up to 10)
+       - Grades: couTotalMarks, totalMarks, percentage, GPA, letter grade
+
+  3. Staff  (numOfStf entries)
+       - Personal info: ID, name, mobile, password, address
+       - Work info: department, position, number of courses, teaching courses
+
+  4. Admins  (numOfAdm entries)
+       - Personal info: ID, name, mobile, password, address
+       - Work info: position
+
+  5. Courses  (numOfCou entries)
+       - Course name, credit hours, academic year
+       - Grade distribution (total, final, practical, year-work, quiz maxima)
+       - Assigned academic members (up to 5)
+       - Per-student enrollment: student index, marks, letter, gradeAssigned flag
+       - Weekly schedule: day, hour, minute, isSet flag
+
+  6. Exams  (numOfExm entries)
+       - Exam date/time: day, month, year, hour, minute
+       - Full course snapshot at time of exam creation
+
+  7. Appointments  (numOfApp entries)
+       - Student ID and name, staff index and name
+       - Status (Pending / Approved / Rejected)
+       - Scheduled date/time
+
+  8. Notifications  (numOfNotif entries)
+       - Recipient user ID and type (0=student, 1=staff, 2=admin)
+       - Message text, icon, color
+       - isRead flag and timestamp (ordering)
+
+
+HOW LOADING WORKS
+-----------------
+When the application starts:
+
+  1. initData() is called first — loads the built-in sample data as a baseline.
+  2. loadData() is called next — if college_data.dat exists, it completely
+     replaces the sample data with everything that was saved previously.
+  3. If no save file exists yet (first run), the application uses the default
+     sample data from initData() so you always have something to work with.
+
+
+FIRST RUN vs SUBSEQUENT RUNS
+------------------------------
+  First run  : No college_data.dat file exists.
+               The app loads default sample data (students, staff, courses, etc.).
+               When you close, college_data.dat is created for the first time.
+
+  Later runs : college_data.dat is found and loaded.
+               All changes made in previous sessions are restored exactly
+               (new students registered, grades assigned, notifications, etc.).
+
+
+TO RESET ALL DATA
+-----------------
+Delete the file:
+    college_data.dat
+
+On the next launch, the application will revert to the original sample data.
+
+
+NOTES
+-----
+  - The file is binary and not human-readable.
+  - Do NOT manually edit college_data.dat — doing so will corrupt the data
+    and the application will fall back to sample data on the next launch.
+  - The save/load uses QDataStream::Qt_5_0 format for broad compatibility.
+    If you upgrade Qt in the future, no changes are needed as long as both
+    the saving and loading code use the same version constant.

@@ -1,0 +1,11 @@
+debug/main.o
+debug/MainWindow.o
+debug/MainWindow_Student.o
+debug/MainWindow_Staff.o
+debug/MainWindow_Admin.o
+debug/MainWindow_Messages.o
+debug/Logic.o
+debug/ForgotPasswordDialog.o
+debug/qrc_resources.o
+debug/moc_MainWindow.o
+debug/moc_ForgotPasswordDialog.o
